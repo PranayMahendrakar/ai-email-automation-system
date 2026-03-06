@@ -1,0 +1,29 @@
+# AI Email Automation System - Requirements
+# Install with: pip install -r requirements.txt
+
+# Web Framework
+flask==3.0.0
+flask-cors==4.0.0
+
+# Google Gmail API
+google-auth==2.25.2
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.111.0
+
+# AI & ML
+openai==1.6.1
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+
+# For production deployment
+gunicorn==21.2.0
+
+# Optional: Enhanced NLP (uncomment if needed)
+# transformers==4.36.0
+# torch==2.1.0
+# sentence-transformers==2.2.2
+# nltk==3.8.1
+# spacy==3.7.2
