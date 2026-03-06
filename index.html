@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📬 AI Email Automation System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">📬</span>
+        <span class="logo-text">AI Mail</span>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="inbox" onclick="switchView('inbox')">
+          <span class="nav-icon">📥</span> Inbox
+          <span class="badge" id="inbox-badge">0</span>
+        </button>
+        <button class="nav-item" data-view="important" onclick="switchView('important')">
+          <span class="nav-icon">⭐</span> Important
+          <span class="badge" id="important-badge">0</span>
+        </button>
+        <button class="nav-item" data-view="drafts" onclick="switchView('drafts')">
+          <span class="nav-icon">📝</span> Drafts
+          <span class="badge" id="drafts-badge">0</span>
+        </button>
+        <button class="nav-item" data-view="sent" onclick="switchView('sent')">
+          <span class="nav-icon">📤</span> Sent
+        </button>
+        <button class="nav-item" data-view="categories" onclick="switchView('categories')">
+          <span class="nav-icon">🗂️</span> Categories
+        </button>
+        <button class="nav-item" data-view="analytics" onclick="switchView('analytics')">
+          <span class="nav-icon">📊</span> Analytics
+        </button>
+        <button class="nav-item" data-view="settings" onclick="switchView('settings')">
+          <span class="nav-icon">⚙️</span> Settings
+        </button>
+      </nav>
+      <div class="ai-status">
+        <div class="status-dot" id="ai-status-dot"></div>
+        <span id="ai-status-text">AI Ready</span>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <input type="text" class="search-bar" placeholder="🔍 Search emails with AI..." id="search-input" onkeyup="searchEmails(event)">
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-primary" onclick="openComposeModal()">✏️ Compose</button>
+          <button class="btn btn-secondary" onclick="syncGmail()">🔄 Sync Gmail</button>
+          <button class="btn btn-ai" onclick="runAIAnalysis()">🤖 AI Analyze All</button>
+          <div class="user-avatar">PM</div>
+        </div>
+      </header>
+
+      <!-- Views -->
+      <div id="view-inbox" class="view active">
+        <div class="view-header">
+          <h2>📥 Inbox</h2>
+          <div class="view-actions">
+            <button class="btn btn-sm" onclick="selectAll()">Select All</button>
+            <button class="btn btn-sm btn-ai" onclick="bulkAutoReply()">🤖 Auto Reply Selected</button>
+            <button class="btn btn-sm btn-ai" onclick="bulkSummarize()">📋 Summarize Selected</button>
+            <select class="filter-select" onchange="filterEmails(this.value)">
+              <option value="all">All Emails</option>
+              <option value="unread">Unread</option>
+              <option value="important">Important</option>
+              <option value="work">Work</option>
+              <option value="personal">Personal</option>
+              <option value="newsletter">Newsletters</option>
+              <option value="spam">Spam</option>
+            </select>
+          </div>
+        </div>
+        <div class="email-list" id="email-list"></div>
+      </div>
+
+      <div id="view-important" class="view">
+        <div class="view-header"><h2>⭐ Important Emails</h2></div>
+        <div class="email-list" id="important-list"></div>
+      </div>
+
+      <div id="view-drafts" class="view">
+        <div class="view-header"><h2>📝 AI Drafted Replies</h2></div>
+        <div class="email-list" id="drafts-list"></div>
+      </div>
+
+      <div id="view-sent" class="view">
+        <div class="view-header"><h2>📤 Sent Emails</h2></div>
+        <div class="email-list" id="sent-list"></div>
+      </div>
+
+      <div id="view-categories" class="view">
+        <div class="view-header"><h2>🗂️ Email Categories</h2></div>
+        <div class="categories-grid" id="categories-grid"></div>
+      </div>
+
+      <div id="view-analytics" class="view">
+        <div class="view-header"><h2>📊 AI Analytics Dashboard</h2></div>
+        <div class="analytics-grid" id="analytics-grid"></div>
+      </div>
+
+      <div id="view-settings" class="view">
+        <div class="view-header"><h2>⚙️ Settings & Gmail Integration</h2></div>
+        <div class="settings-panel" id="settings-panel"></div>
+      </div>
+    </main>
+
+    <!-- Email Detail Panel -->
+    <aside class="detail-panel" id="detail-panel">
+      <div class="detail-header">
+        <button class="btn btn-sm" onclick="closeDetail()">✕ Close</button>
+        <div class="detail-actions">
+          <button class="btn btn-sm btn-ai" onclick="aiSummarize()">📋 Summarize</button>
+          <button class="btn btn-sm btn-ai" onclick="aiDraftReply()">✍️ Draft Reply</button>
+          <button class="btn btn-sm btn-ai" onclick="aiAutoReply()">🤖 Auto Reply</button>
+          <button class="btn btn-sm btn-ai" onclick="aiDetectImportance()">⭐ Check Importance</button>
+        </div>
+      </div>
+      <div class="detail-content" id="detail-content"></div>
+    </aside>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="compose-modal" onclick="closeComposeModal(event)">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>✏️ Compose Email</h3>
+          <button class="btn btn-sm" onclick="closeComposeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="modal-input" placeholder="To:" id="compose-to">
+          <input type="text" class="modal-input" placeholder="Subject:" id="compose-subject">
+          <textarea class="modal-textarea" placeholder="Write your email..." id="compose-body"></textarea>
+          <div class="modal-ai-bar">
+            <button class="btn btn-ai" onclick="aiImproveEmail()">🤖 AI Improve</button>
+            <button class="btn btn-ai" onclick="aiGenerateEmail()">✨ AI Generate</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="sendEmail()">📤 Send</button>
+          <button class="btn btn-secondary" onclick="saveAsDraft()">💾 Save Draft</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Processing Overlay -->
+    <div class="ai-overlay" id="ai-overlay">
+      <div class="ai-spinner">
+        <div class="spinner"></div>
+        <p id="ai-overlay-text">AI Processing...</p>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
